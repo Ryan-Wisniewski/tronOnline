@@ -13,7 +13,7 @@ function App() {
     
     const setUserDirection = (key) => {
       // console.log(key.keyCode, direction)
-      console.log('keyyy',key)
+      // console.log('keyyy',key)
       socket.emit('player direction', JSON.stringify({userId: userId, direction: key.keyCode})).once()
     }
 
