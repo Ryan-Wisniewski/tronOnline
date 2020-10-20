@@ -6,24 +6,14 @@ const url = 'localhost:8000'
 const socket = io.connect(url);
 function App() {
   const [userId, setUserId] = useState()
-  // const [direction, setDirection] = useState()
-  let direction = null
-//   let x = 64
-// let y = 56
-  // console.log(socket.id)
-
 
   useEffect(() => {
     document.addEventListener('keydown', (key) => setUserDirection(key))
     
     const setUserDirection = (key) => {
       // console.log(key.keyCode, direction)
-      console.log('keyyy',key, direction)
-      if(direction !== key.keyCode){
-        console.log('yeeet')
-        socket.emit('player direction', JSON.stringify({userId: userId, direction: key.keyCode})).once()
-      }
-      direction = key.keyCode
+      console.log('keyyy',key)
+      socket.emit('player direction', JSON.stringify({userId: userId, direction: key.keyCode})).once()
     }
 
     const handleDirection = (headSnake, res) =>{
@@ -43,13 +33,12 @@ function App() {
       setUserId(socket.id)
       console.log('players response: ', socket.id, JSON.parse(res))
     })
-    
+
     socket.on('game-start', (result)=> {
       let res = JSON.parse(result)
       //game logic here...
       let tempColor = ['red', 'blue', 'orange', 'purple']
       const board = document.querySelector('.board')
-      let removingOldSnakeHead = document.getElementsByClassName('head')
 
       for(let i = 0; i < res.length; i++){
           // const playerSnake = document.createElement('div')
@@ -74,7 +63,6 @@ function App() {
     socket.on('gameOver', (result)=> {
       // reset FE board now
       let res = JSON.parse(result)
-      const board = document.querySelector('.board')
       console.log('gameOver response: ', res)
       let removingOldSnake1 = document.querySelectorAll('.snake1')
       let removingOldSnake2 = document.querySelectorAll('.snake2')
