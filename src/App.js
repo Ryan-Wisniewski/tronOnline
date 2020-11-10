@@ -2,8 +2,8 @@ import React, {useState, useEffect} from 'react';
 import io from 'socket.io-client'
 import NavBar from './NavBar'
 import './App.css';
-// const url = 'https://snake-online-serve.herokuapp.com/'
-const url = 'localhost:8000'
+const url = 'https://snake-online-serve.herokuapp.com/'
+// const url = 'localhost:8000'
 const socket = io.connect(url);
 function App() {
   const [userId, setUserId] = useState()
