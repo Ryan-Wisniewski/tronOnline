@@ -4,17 +4,49 @@
 }
 .App {
   text-align: center;
+  color: #000;
   display: flex;
   flex-flow: column;
   /* justify-content: center; */
   align-items: center;
+  background-color: turquoise;
+  min-height: 100vh;
+  font-family: fantasy;
+  font-weight: 300;
+}
+
+.nav{
+  height: 7rem;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background-color: #000;
+}
+
+.nav p{
+  display: inline-block;
+  margin-top: 1rem;
+  font-size: 5rem;
+  background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.btnGroup{
+  margin-top: 2rem;
+}
+
+.btnGroup button{
+  margin: 0 2rem;
+  padding: .5rem 1rem;
 }
 
 .board{
-  background-color: greenyellow;
+  background-color: chartreuse;
   height: 600px;
   width: 711px;
   position: relative;
+  margin: 2rem 0;
 }
 
 .snake1{
@@ -52,4 +84,73 @@
   width: calc(711px / 64);
   position: absolute;
   background-color: purple;
+}
+
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+.win{
+  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);;
+  z-index: 1;
+  width: 25%;
+  position: absolute;
+  top: 40%;
+  margin: 0 auto;
+  padding: 3rem 5rem;
+  border: 1rem solid gold;
+  color: #000;
+  text-shadow: -1px -1px 0 gold, 1px -1px 0 gold, -1px 1px 0 gold, 1px 1px 0 gold;;
+}
+
+.toggle{
+  color: gold;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;;
+}
+
+.directions{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  background-color: white;
+  border: 1px solid black;
+  margin: auto 0;
+  padding: 2rem 4rem;
+}
+
+.directions h3{
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+
+.directions p{
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.directions span{
+  background-color: chartreuse;
+  padding: 2px 5px;
+}
+
+.directions button{
+  padding: .5rem 1rem;
 }

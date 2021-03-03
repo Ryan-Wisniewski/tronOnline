@@ -1,19 +1,40 @@
 import React, {useState, useEffect} from 'react';
 import io from 'socket.io-client'
-import NavBar from './NavBar'
+import NavBar from './components/NavBar'
+import Confetti from './components/Confetti'
+import WinnerModal from './components/WinnerModal'
+import Directions from './components/Directions';
 import './App.css';
 const url = 'https://snake-online-serve.herokuapp.com/'
 // const url = 'localhost:8000'
 const socket = io.connect(url);
 function App() {
   const [userId, setUserId] = useState()
+  const [winningConfetti, setWinningConfetti] = useState(false)
+  const [helpMenu, setHelpMenu] = useState(false)
+  
+  let toggle = document.querySelector('#toggle')
+  let interval
+  const isToggle = () => {
+    if(toggle)toggle.classList.toggle('toggle')
+  }
+  if(winningConfetti === true){
+    interval = setInterval(isToggle, 200)
+  }
+  if(winningConfetti === false){
+    clearInterval(interval)
+  }
 
   useEffect(() => {
     document.addEventListener('keydown', (key) => setUserDirection(key))
-    
     const setUserDirection = (key) => {
+      if([37, 38, 39, 40].indexOf(key.keyCode) > -1) {
+        key.preventDefault();
+        if(winningConfetti === true){
+          setWinningConfetti(false)
+        }
+      }
       // console.log(key.keyCode, direction)
-      // console.log('keyyy',key)
       socket.emit('player direction', JSON.stringify({userId: userId, direction: key.keyCode})).once()
     }
 
@@ -30,19 +51,18 @@ function App() {
       }
     }
 
-    socket.on('setId', (res)=> {
+    socket.on('setId', ()=> {
       setUserId(socket.id)
-      console.log('players response: ', socket.id, JSON.parse(res))
     })
 
     socket.on('game-start', (result)=> {
+      if(helpMenu === true){setHelpMenu(false)}
       let res = JSON.parse(result)
       //game logic here...
       let tempColor = ['red', 'blue', 'orange', 'purple']
       const board = document.querySelector('.board')
 
       for(let i = 0; i < res.length; i++){
-          // const playerSnake = document.createElement('div')
           const headSnake = document.createElement('div')
           headSnake.className = 'head'
           headSnake.style.background = tempColor[i]
@@ -50,14 +70,6 @@ function App() {
           headSnake.style.left = `${(711 / 64) * res[i].x}px`
           handleDirection(headSnake, res[i])
           board.appendChild(headSnake)
-          // console.log(headSnake)
-
-        // if(res[i].userId === socket.id){
-          // playerSnake.className = `snake${i+1}`
-          // playerSnake.style.top = `${(600 / 56) * res[i].y}px`
-          // playerSnake.style.left = `${(711 / 64) * res[i].x}px`
-          // board.appendChild(playerSnake)
-        // }
       }
     })
 
@@ -65,28 +77,54 @@ function App() {
       // reset FE board now
       let res = JSON.parse(result)
       console.log('gameOver response: ', res)
-      let removingOldSnake1 = document.querySelectorAll('.snake1')
-      let removingOldSnake2 = document.querySelectorAll('.snake2')
-      let removingOldSnake3 = document.querySelectorAll('.snake3') 
-      let removingOldSnake4 = document.querySelectorAll('.snake4')
-      let removingOldSnakeHead = document.querySelectorAll('.head')
-      removingOldSnake1.forEach((each) => {each.parentNode.removeChild(each)})
-      removingOldSnake2.forEach((each) => {each.parentNode.removeChild(each)})
-      removingOldSnake3.forEach((each) => {each.parentNode.removeChild(each)})
-      removingOldSnake4.forEach((each) => {each.parentNode.removeChild(each)})
-      removingOldSnakeHead.forEach((each) => {each.parentNode.removeChild(each)})
+      for(let i = 0; i < res.winner.length; i++){
+        if(socket.id === res.winner[i]){
+          setWinningConfetti(true)
+        }
+      }
+      setTimeout(() => {
+        //remove old appended head class.
+        let removingOldSnakeHead = document.querySelectorAll('.head')
+        removingOldSnakeHead.forEach((each) => {each.parentNode.removeChild(each)})
+        //draw start snake
+        const board = document.querySelector('.board')
+        let tempColor = ['red', 'blue', 'orange', 'purple']
+        for(let i = 0; i < res.players.length; i++){
+          const headSnake = document.createElement('div')
+          headSnake.className = 'head'
+          headSnake.style.background = tempColor[i]
+          headSnake.style.top = `${(600 / 56) * res.players[i].y}px`
+          headSnake.style.left = `${(711 / 64) * res.players[i].x}px`
+          handleDirection(headSnake, res.players[i])
+          board.appendChild(headSnake)
+        }
+      }, 3000)
     })
   })
 
-  const onclick = () => {
+  const forceStart = () => {
     socket.emit('initNewGame', true)
+  }
+
+  const isHelp= () => {
+    if(helpMenu === false){
+      setHelpMenu(true)
+    } else {
+      setHelpMenu(false)
+    }
   }
 
   return (
     <div className="App">
       <NavBar />
+      <div className='btnGroup'>
+        <button onClick={isHelp}>Game directions</button>
+        <button onClick={forceStart}>Force Start</button>
+      </div>
       <div className='board'></div>
-      <button onClick={onclick}>Force Start</button>
+      {winningConfetti === true && <Confetti />}
+      {winningConfetti === true && <WinnerModal />}
+      {helpMenu === true && <Directions help={{helpMenu: helpMenu, setHelpMenu: setHelpMenu}}/>}
     </div>
   );
 }
