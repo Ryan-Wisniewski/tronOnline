@@ -5,7 +5,8 @@ import Confetti from './components/Confetti'
 import WinnerModal from './components/WinnerModal'
 import Directions from './components/Directions';
 import './App.css';
-const url = 'https://snake-online-serve.herokuapp.com/'
+const url = 'https://tron-server-zeta.vercel.app/'
+// snake-online-serve.herokuapp.com/
 // const url = 'localhost:8000'
 const socket = io.connect(url);
 function App() {
